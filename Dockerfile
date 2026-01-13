@@ -21,9 +21,10 @@ RUN apt-get update && apt-get install -y \
     jq \
     && rm -rf /var/lib/apt/lists/*
 
-
 # Create non-root user for security
-RUN addgroup -S hytale && adduser -S hytale -G hytale
+RUN groupadd --system hytale && \
+    useradd --system --gid hytale --create-home --home-dir /server hytale
+
 
 # Create server directory
 WORKDIR /server
