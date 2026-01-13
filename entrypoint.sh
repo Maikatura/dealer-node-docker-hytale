@@ -118,4 +118,4 @@ fi
 
 # Execute the server (exec replaces shell process)
 echo "[Dealer Node] Executing: java $JVM_ARGS -jar HytaleServer.jar $SERVER_ARGS"
-exec java $JVM_ARGS -jar HytaleServer.jar $SERVER_ARGS
+exec java $JVM_ARGS -jar /server/HytaleServer.jar $SERVER_ARGS
