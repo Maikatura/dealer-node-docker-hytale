@@ -2,7 +2,6 @@
 # Hytale Server Docker Image
 # ==============================================================================
 # Runs a Hytale game server with automatic updates via hytale-downloader.
-# 
 # SECURITY: No credentials are stored in this image. All authentication
 # tokens must be provided at runtime via environment variables.
 # ==============================================================================
@@ -19,38 +18,33 @@ RUN apt-get update && apt-get install -y \
     unzip \
     bash \
     jq \
-	screen \
+    screen \
     && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user for security
 RUN groupadd --system hytale && \
-    useradd --system --gid hytale --create-home --home-dir /server hytale
+    useradd --system --gid hytale --create-home --home-dir /Server hytale
 
+# Set working directory to /Server
+WORKDIR /Server
 
-# Create server directory
-WORKDIR /server
+# Make sure /Server is fully writable
+RUN mkdir -p /Server && \
+    chown -R hytale:hytale /Server && \
+    chmod -R 777 /Server
 
 # Download hytale-downloader CLI
 RUN curl -fsSL -o hytale-downloader.zip "https://downloader.hytale.com/hytale-downloader.zip" && \
-    unzip hytale-downloader.zip && \
+    unzip -o hytale-downloader.zip && \
     mv hytale-downloader-linux-amd64 hytale-downloader && \
     chmod +x hytale-downloader && \
     rm hytale-downloader.zip hytale-downloader-windows-amd64.exe QUICKSTART.md 2>/dev/null || true
 
-# Create the /Server directory
-RUN mkdir -p /Server && \
-    chown -R hytale:hytale /Server && \
-    chmod -R 755 /Server && \
-    chmod -R 755 /server
-
 # Create directories for persistent data
-RUN mkdir -p /Server/universe /Server/mods /Server/config
-	
-
-
+RUN mkdir -p universe mods config
 
 # Copy entrypoint script
-COPY --chmod=755 entrypoint.sh /entrypoint.sh
+COPY --chown=hytale:hytale --chmod=755 entrypoint.sh /entrypoint.sh
 
 # Expose UDP port for QUIC protocol
 EXPOSE 5520/udp
@@ -69,4 +63,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 # Run as non-root user
 USER hytale
 
+# Entrypoint
 ENTRYPOINT ["/entrypoint.sh"]
