@@ -63,7 +63,7 @@ fi
 # ------------------------------------------------------------------------------
 # Verify required files exist
 # ------------------------------------------------------------------------------
-if [ ! -f "/server/HytaleServer.jar" ]; then
+if [ ! -f "/Server/HytaleServer.jar" ]; then
     echo "[ERROR] HytaleServer.jar not found after download"
     exit 1
 fi
@@ -118,4 +118,4 @@ fi
 
 # Execute the server (exec replaces shell process)
 echo "[Loser Node] Executing: java $JVM_ARGS -jar HytaleServer.jar $SERVER_ARGS"
-exec java $JVM_ARGS -jar /server/HytaleServer.jar $SERVER_ARGS
+exec java $JVM_ARGS -jar /Server/HytaleServer.jar $SERVER_ARGS
