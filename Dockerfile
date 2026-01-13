@@ -40,7 +40,8 @@ RUN curl -fsSL -o hytale-downloader.zip "https://downloader.hytale.com/hytale-do
 # Create the /Server directory
 RUN mkdir -p /Server && \
     chown -R hytale:hytale /Server && \
-    chmod -R 755 /Server
+    chmod -R 755 /Server && \
+    chmod -R 755 /server
 
 # Create directories for persistent data
 RUN mkdir -p /Server/universe /Server/mods /Server/config
