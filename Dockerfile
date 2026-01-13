@@ -26,7 +26,7 @@ RUN groupadd --system hytale && \
     useradd --system --gid hytale --create-home --home-dir /Server hytale
 
 # Set working directory to /Server
-WORKDIR /Server
+WORKDIR /server
 
 # Make sure /Server is fully writable
 RUN mkdir -p /Server /Server/universe /Server/mods && \
