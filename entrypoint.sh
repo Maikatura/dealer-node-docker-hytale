@@ -106,6 +106,7 @@ JVM_ARGS="$JVM_ARGS -XX:+UseContainerSupport"
 SERVER_ARGS="--bind 0.0.0.0:5520"
 SERVER_ARGS="$SERVER_ARGS --auth-mode $AUTH_MODE"
 SERVER_ARGS="$SERVER_ARGS --disable-sentry"
+SERVER_ARGS="$SERVER_ARGS --assets ../Assets.zip"
 
 if [ -n "$ASSETS_PATH" ]; then
     SERVER_ARGS="$SERVER_ARGS --assets $ASSETS_PATH"
