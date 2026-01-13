@@ -8,7 +8,7 @@
 set -e
 
 echo "╔══════════════════════════════════════════════════════════════════╗"
-echo "║              Loser Node - Hytale Server                          ║"
+echo "║              Loser Node - Hytale Server                         ║"
 echo "╚══════════════════════════════════════════════════════════════════╝"
 
 # ------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ echo "[Loser Node] Credentials configured"
 # ------------------------------------------------------------------------------
 # Download/update server files
 # ------------------------------------------------------------------------------
-if [ ! -f "/server/HytaleServer.jar" ]; then
+if [ ! -f "HytaleServer.jar" ]; then
     echo "[Loser Node] Downloading server files..."
     ./hytale-downloader -download-path server-files.zip
     
@@ -51,7 +51,7 @@ if [ ! -f "/server/HytaleServer.jar" ]; then
         exit 1
     fi
 else
-    echo "[Dealer Node] Server files already present"
+    echo "[Loser Node] Server files already present"
     
     # Check for updates
     if [ "${SKIP_UPDATE_CHECK:-false}" != "true" ]; then
@@ -63,13 +63,10 @@ fi
 # ------------------------------------------------------------------------------
 # Verify required files exist
 # ------------------------------------------------------------------------------
-if [ ! -f "/server/HytaleServer.jar" ]; then
-    echo "[Loser Node] Moving server files to /server..."
-    mv /Server/* /server/ 2>/dev/null || true
-    rmdir /Server 2>/dev/null || true
+if [ ! -f "HytaleServer.jar" ]; then
+    echo "[ERROR] HytaleServer.jar not found after download"
+    exit 1
 fi
-
-
 
 if [ ! -f "Assets.zip" ] && [ ! -d "Assets" ]; then
     echo "[WARNING] Assets not found - server may not start correctly"
@@ -121,4 +118,4 @@ fi
 
 # Execute the server (exec replaces shell process)
 echo "[Loser Node] Executing: java $JVM_ARGS -jar HytaleServer.jar $SERVER_ARGS"
-exec java $JVM_ARGS -jar /server/HytaleServer.jar $SERVER_ARGS
+exec java $JVM_ARGS -jar HytaleServer.jar $SERVER_ARGS
