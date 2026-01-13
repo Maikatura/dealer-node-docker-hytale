@@ -34,8 +34,8 @@ RUN curl -fsSL -o hytale-downloader.zip "https://downloader.hytale.com/hytale-do
     rm hytale-downloader.zip hytale-downloader-windows-amd64.exe QUICKSTART.md 2>/dev/null || true
 
 # Create directories for persistent data
-RUN mkdir -p /server/universe /server/mods /server/config && \
-    chown -R hytale:hytale /server
+RUN mkdir -p /Server/universe /Server/mods /Server/config && \
+    chown -R hytale:hytale /Server
 
 # Copy entrypoint script
 COPY --chmod=755 entrypoint.sh /entrypoint.sh

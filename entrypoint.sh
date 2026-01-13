@@ -38,7 +38,7 @@ echo "[Loser Node] Credentials configured"
 # ------------------------------------------------------------------------------
 # Download/update server files
 # ------------------------------------------------------------------------------
-if [ ! -f "HytaleServer.jar" ]; then
+if [ ! -f "/Server/HytaleServer.jar" ]; then
     echo "[Loser Node] Downloading server files..."
     ./hytale-downloader -download-path server-files.zip
     
