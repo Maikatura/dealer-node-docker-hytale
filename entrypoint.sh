@@ -101,6 +101,7 @@ JVM_ARGS="$JVM_ARGS -XX:+UseStringDeduplication"
 
 # Container awareness
 JVM_ARGS="$JVM_ARGS -XX:+UseContainerSupport"
+JVM_ARGS="$JVM_ARGS --enable-native-access=ALL-UNNAMED"
 
 # Build server arguments
 SERVER_ARGS="--bind 0.0.0.0:5520"
@@ -118,4 +119,5 @@ fi
 
 # Execute the server (exec replaces shell process)
 echo "[Loser Node] Executing: java $JVM_ARGS -jar HytaleServer.jar $SERVER_ARGS"
-exec java $JVM_ARGS -jar ./Server/HytaleServer.jar $SERVER_ARGS
+screen -DmS hytale java $JVM_ARGS -jar ./Server/HytaleServer.jar $SERVER_ARGS
+
