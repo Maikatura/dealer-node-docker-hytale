@@ -29,8 +29,8 @@ RUN groupadd --system hytale && \
 WORKDIR /server
 
 # Make sure /Server is fully writable
-RUN mkdir -p /Server && \
-    chown -R hytale:hytale /Server
+RUN mkdir -p /server && \
+    chown -R hytale:hytale /server
 
 # Download hytale-downloader CLI
 RUN curl -fsSL -o hytale-downloader.zip "https://downloader.hytale.com/hytale-downloader.zip" && \
