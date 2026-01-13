@@ -63,7 +63,7 @@ fi
 # ------------------------------------------------------------------------------
 # Verify required files exist
 # ------------------------------------------------------------------------------
-if [ ! -f "HytaleServer.jar" ]; then
+if [ ! -f "/server/HytaleServer.jar" ]; then
     echo "[ERROR] HytaleServer.jar not found after download"
     exit 1
 fi
