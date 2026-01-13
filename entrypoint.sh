@@ -38,7 +38,7 @@ echo "[Loser Node] Credentials configured"
 # ------------------------------------------------------------------------------
 # Download/update server files
 # ------------------------------------------------------------------------------
-if [ ! -f "/Server/HytaleServer.jar" ]; then
+if [ ! -f "/server/HytaleServer.jar" ]; then
     echo "[Loser Node] Downloading server files..."
     ./hytale-downloader -download-path server-files.zip
     
@@ -63,10 +63,12 @@ fi
 # ------------------------------------------------------------------------------
 # Verify required files exist
 # ------------------------------------------------------------------------------
-if [ ! -f "/Server/HytaleServer.jar" ]; then
-    echo "[ERROR] HytaleServer.jar not found after download"
-    exit 1
+if [ ! -f "/server/HytaleServer.jar" ]; then
+    echo "[Loser Node] Moving server files to /server..."
+    mv /Server/* /server/
+    rmdir /Server  # remove the empty /Server folder
 fi
+
 
 if [ ! -f "Assets.zip" ] && [ ! -d "Assets" ]; then
     echo "[WARNING] Assets not found - server may not start correctly"
@@ -118,4 +120,4 @@ fi
 
 # Execute the server (exec replaces shell process)
 echo "[Loser Node] Executing: java $JVM_ARGS -jar HytaleServer.jar $SERVER_ARGS"
-exec java $JVM_ARGS -jar /Server/HytaleServer.jar $SERVER_ARGS
+exec java $JVM_ARGS -jar /server/HytaleServer.jar $SERVER_ARGS
