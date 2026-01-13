@@ -8,7 +8,7 @@
 #   - Manual workflow dispatch
 #   - Release tags (v*)
 #
-# Published to: ghcr.io/dealernode/hytale-server
+# Published to: ghcr.io/MAIKATURA/dealer-node-docker-hytale
 # ==============================================================================
 
 name: Build Hytale Server Image
@@ -43,7 +43,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: dealernode/hytale-server
+  IMAGE_NAME: maikatura/dealer-node-docker-hytale
 
 jobs:
   build-and-push:
