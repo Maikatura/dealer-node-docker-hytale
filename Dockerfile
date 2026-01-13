@@ -35,7 +35,7 @@ RUN curl -fsSL -o hytale-downloader.zip "https://downloader.hytale.com/hytale-do
 
 # Create directories for persistent data
 RUN mkdir -p /server/universe /server/mods /server/config && \
-    chown -R hytale:hytale /server
+    chown -R hytale:hytale /server && chown -R hytale:hytale /Server
 
 # Copy entrypoint script
 COPY --chmod=755 entrypoint.sh /entrypoint.sh
@@ -55,6 +55,6 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD pgrep -f "HytaleServer.jar" || exit 1
 
 # Run as non-root user
-USER root
+USER hytale
 
 ENTRYPOINT ["/entrypoint.sh"]
