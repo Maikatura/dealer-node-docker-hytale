@@ -65,9 +65,10 @@ fi
 # ------------------------------------------------------------------------------
 if [ ! -f "/server/HytaleServer.jar" ]; then
     echo "[Loser Node] Moving server files to /server..."
-    mv /Server/* /server/
-    rmdir /Server  # remove the empty /Server folder
+    mv /Server/* /server/ 2>/dev/null || true
+    rmdir /Server 2>/dev/null || true
 fi
+
 
 
 if [ ! -f "Assets.zip" ] && [ ! -d "Assets" ]; then
