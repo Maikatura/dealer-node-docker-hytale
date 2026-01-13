@@ -31,6 +31,8 @@ WORKDIR /server
 # Make sure /Server is fully writable
 RUN mkdir -p /server && \
     chown -R hytale:hytale /server
+	
+RUN mkdir -p /server/universe /server/mods /server/config
 
 # Download hytale-downloader CLI
 RUN curl -fsSL -o hytale-downloader.zip "https://downloader.hytale.com/hytale-downloader.zip" && \
