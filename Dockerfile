@@ -7,7 +7,7 @@
 # tokens must be provided at runtime via environment variables.
 # ==============================================================================
 
-FROM eclipse-temurin:25-jdk-alpine
+FROM eclipse-temurin:25-jdk
 
 LABEL maintainer="Dealer Node <administration@dealernode.app>"
 LABEL description="Hytale Game Server"
