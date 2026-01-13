@@ -14,11 +14,13 @@ LABEL description="Hytale Game Server"
 LABEL version="1.0.0"
 
 # Install dependencies
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     curl \
     unzip \
     bash \
-    jq
+    jq \
+    && rm -rf /var/lib/apt/lists/*
+
 
 # Create non-root user for security
 RUN addgroup -S hytale && adduser -S hytale -G hytale
