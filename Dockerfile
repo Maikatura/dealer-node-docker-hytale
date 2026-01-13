@@ -30,7 +30,7 @@ WORKDIR /Server
 
 # Make sure /Server is fully writable
 RUN mkdir -p /Server && \
-    chown -R hytale:hytale /Server && \
+    chown -R hytale:hytale /Server
 
 # Download hytale-downloader CLI
 RUN curl -fsSL -o hytale-downloader.zip "https://downloader.hytale.com/hytale-downloader.zip" && \
