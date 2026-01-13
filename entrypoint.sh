@@ -118,5 +118,5 @@ fi
 
 # Execute the server (exec replaces shell process)
 echo "[Loser Node] Executing: java $JVM_ARGS -jar HytaleServer.jar $SERVER_ARGS"
-#screen -DmS hytale java $JVM_ARGS -jar ./Server/HytaleServer.jar $SERVER_ARGS
-exec java $JVM_ARGS -jar ./Server/HytaleServer.jar $SERVER_ARGS
+screen -DmS hytale java $JVM_ARGS -jar ./Server/HytaleServer.jar $SERVER_ARGS
+#exec java $JVM_ARGS -jar ./Server/HytaleServer.jar $SERVER_ARGS
