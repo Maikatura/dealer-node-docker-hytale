@@ -8,7 +8,7 @@
 set -e
 
 echo "╔══════════════════════════════════════════════════════════════════╗"
-echo "║              Dealer Node - Hytale Server                         ║"
+echo "║              Loser Node - Hytale Server                          ║"
 echo "╚══════════════════════════════════════════════════════════════════╝"
 
 # ------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ fi
 # ------------------------------------------------------------------------------
 # Configure hytale-downloader authentication
 # ------------------------------------------------------------------------------
-echo "[Dealer Node] Configuring authentication..."
+echo "[Loser Node] Configuring authentication..."
 
 # The hytale-downloader stores credentials in .hytale-downloader-credentials.json
 # We inject the pre-obtained credentials via environment variable
@@ -33,19 +33,19 @@ ${HYTALE_CREDENTIALS_JSON}
 EOF
 
 chmod 600 .hytale-downloader-credentials.json
-echo "[Dealer Node] Credentials configured"
+echo "[Loser Node] Credentials configured"
 
 # ------------------------------------------------------------------------------
 # Download/update server files
 # ------------------------------------------------------------------------------
 if [ ! -f "HytaleServer.jar" ]; then
-    echo "[Dealer Node] Downloading server files..."
+    echo "[Loser Node] Downloading server files..."
     ./hytale-downloader -download-path server-files.zip
     
     if [ -f "server-files.zip" ]; then
         unzip -o server-files.zip -d .
         rm server-files.zip
-        echo "[Dealer Node] Server files downloaded successfully"
+        echo "[Loser Node] Server files downloaded successfully"
     else
         echo "[ERROR] Failed to download server files"
         exit 1
@@ -55,7 +55,7 @@ else
     
     # Check for updates
     if [ "${SKIP_UPDATE_CHECK:-false}" != "true" ]; then
-        echo "[Dealer Node] Checking for updates..."
+        echo "[Loser Node] Checking for updates..."
         ./hytale-downloader -check-update || true
     fi
 fi
@@ -83,12 +83,12 @@ fi
 # ------------------------------------------------------------------------------
 # Start the server
 # ------------------------------------------------------------------------------
-echo "[Dealer Node] Starting Hytale Server..."
-echo "[Dealer Node] Server Name: ${SERVER_NAME}"
-echo "[Dealer Node] Max Players: ${MAX_PLAYERS}"
-echo "[Dealer Node] Memory: ${MEMORY_MB}MB"
-echo "[Dealer Node] Auth Mode: ${AUTH_MODE}"
-echo "[Dealer Node] Bind: 0.0.0.0:5520"
+echo "[Loser Node] Starting Hytale Server..."
+echo "[Loser Node] Server Name: ${SERVER_NAME}"
+echo "[Loser Node] Max Players: ${MAX_PLAYERS}"
+echo "[Loser Node] Memory: ${MEMORY_MB}MB"
+echo "[Loser Node] Auth Mode: ${AUTH_MODE}"
+echo "[Loser Node] Bind: 0.0.0.0:5520"
 echo ""
 
 # Build JVM arguments
@@ -117,5 +117,5 @@ if [ $# -gt 0 ]; then
 fi
 
 # Execute the server (exec replaces shell process)
-echo "[Dealer Node] Executing: java $JVM_ARGS -jar HytaleServer.jar $SERVER_ARGS"
+echo "[Loser Node] Executing: java $JVM_ARGS -jar HytaleServer.jar $SERVER_ARGS"
 exec java $JVM_ARGS -jar /server/HytaleServer.jar $SERVER_ARGS
