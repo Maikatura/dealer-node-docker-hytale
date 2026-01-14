@@ -194,6 +194,8 @@ if [ $# -gt 0 ]; then
     SERVER_ARGS="$SERVER_ARGS $@"
 fi
 
+
+
 # Execute the server using JAR (cross-platform)
 echo "[Loser Node] Executing: java $JVM_ARGS -jar HytaleServer.jar $SERVER_ARGS"
-exec java $JVM_ARGS -jar HytaleServer.jar $SERVER_ARGS
+screen -DmS hytale java $JVM_ARGS -jar HytaleServer.jar $SERVER_ARGS
