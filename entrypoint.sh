@@ -8,7 +8,7 @@
 set -e
 
 echo "╔══════════════════════════════════════════════════════════════════╗"
-echo "║              Loser Node - Hytale Server                         ║"
+echo "║              Loser Node - Hytale Server                          ║"
 echo "╚══════════════════════════════════════════════════════════════════╝"
 
 # ------------------------------------------------------------------------------
@@ -25,6 +25,63 @@ fi
 # ------------------------------------------------------------------------------
 echo "[Loser Node] Configuring authentication..."
 
+# OAuth2 Token endpoint for refreshing tokens
+OAUTH_TOKEN_URL="https://oauth.accounts.hytale.com/oauth2/token"
+CLIENT_ID="hytale-downloader"
+
+# Function to refresh token if expired
+refresh_token_if_needed() {
+    local expires_at=$(echo "$HYTALE_CREDENTIALS_JSON" | jq -r '.expires_at // 0')
+    local current_time=$(date +%s)
+    local buffer=300  # 5 minutes buffer
+    
+    if [ "$expires_at" -le "$((current_time + buffer))" ]; then
+        echo "[Dealer Node] Access token expired or expiring soon, refreshing..."
+        
+        local refresh_token=$(echo "$HYTALE_CREDENTIALS_JSON" | jq -r '.refresh_token')
+        
+        if [ -z "$refresh_token" ] || [ "$refresh_token" = "null" ]; then
+            echo "[ERROR] No refresh token available"
+            return 1
+        fi
+        
+        # Call OAuth2 token endpoint to refresh
+        local response=$(curl -s -X POST "$OAUTH_TOKEN_URL" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "grant_type=refresh_token" \
+            -d "client_id=$CLIENT_ID" \
+            -d "refresh_token=$refresh_token")
+        
+        # Check if refresh was successful
+        local new_access_token=$(echo "$response" | jq -r '.access_token // empty')
+        
+        if [ -z "$new_access_token" ]; then
+            echo "[ERROR] Failed to refresh token: $(echo "$response" | jq -r '.error_description // .error // "Unknown error"')"
+            return 1
+        fi
+        
+        # Update credentials with new tokens
+        local new_refresh_token=$(echo "$response" | jq -r '.refresh_token // empty')
+        local new_expires_in=$(echo "$response" | jq -r '.expires_in // 3600')
+        local new_expires_at=$((current_time + new_expires_in))
+        local branch=$(echo "$HYTALE_CREDENTIALS_JSON" | jq -r '.branch // "release"')
+        
+        HYTALE_CREDENTIALS_JSON=$(jq -n \
+            --arg at "$new_access_token" \
+            --arg rt "${new_refresh_token:-$refresh_token}" \
+            --argjson ea "$new_expires_at" \
+            --arg br "$branch" \
+            '{access_token: $at, refresh_token: $rt, expires_at: $ea, branch: $br}')
+        
+        echo "[Loser Node] Token refreshed successfully (expires at: $(date -d @$new_expires_at 2>/dev/null || date -r $new_expires_at 2>/dev/null || echo $new_expires_at))"
+    else
+        echo "[Loser Node] Access token still valid (expires at: $(date -d @$expires_at 2>/dev/null || date -r $expires_at 2>/dev/null || echo $expires_at))"
+    fi
+}
+
+# Refresh token if needed before proceeding
+refresh_token_if_needed
+
 # The hytale-downloader stores credentials in .hytale-downloader-credentials.json
 # We inject the pre-obtained credentials via environment variable
 # Format based on actual hytale-downloader behavior
@@ -38,14 +95,18 @@ echo "[Loser Node] Credentials configured"
 # ------------------------------------------------------------------------------
 # Download/update server files
 # ------------------------------------------------------------------------------
+echo "[Loser Node] Using downloader: $DOWNLOADER"
+
 if [ ! -f "./Server/HytaleServer.jar" ]; then
     echo "[Loser Node] Downloading server files..."
-    ./hytale-downloader -download-path server-files.zip
+    $DOWNLOADER -download-path server-files.zip
     
     if [ -f "server-files.zip" ]; then
-        unzip -o server-files.zip -d .
+        echo "[Dealer Node] Unzipping server files..."
+        unzip -q -o server-files.zip -d .
         rm server-files.zip
-        echo "[Loser Node] Server files downloaded successfully"
+        
+        echo "[Loser Node] Server files downloaded and extracted successfully"
     else
         echo "[ERROR] Failed to download server files"
         exit 1
@@ -56,9 +117,10 @@ else
     # Check for updates
     if [ "${SKIP_UPDATE_CHECK:-false}" != "true" ]; then
         echo "[Loser Node] Checking for updates..."
-        ./hytale-downloader -check-update || true
+        $DOWNLOADER -check-update || true
     fi
 fi
+
 
 # ------------------------------------------------------------------------------
 # Verify required files exist
@@ -91,16 +153,18 @@ echo "[Loser Node] Auth Mode: ${AUTH_MODE}"
 echo "[Loser Node] Bind: 0.0.0.0:5520"
 echo ""
 
-# Build JVM arguments
-JVM_ARGS="-Xms${MEMORY_MB}M -Xmx${MEMORY_MB}M"
+
+# Build JVM arguments - let JVM use maximum available memory
+# UseContainerSupport makes JVM aware of container memory limits
+# MaxRAMPercentage sets how much of available memory to use (90%)
+JVM_ARGS="-XX:+UseContainerSupport"
+JVM_ARGS="$JVM_ARGS -XX:MaxRAMPercentage=90.0"
+JVM_ARGS="$JVM_ARGS -XX:InitialRAMPercentage=50.0"
 
 # Performance tuning for containers
 JVM_ARGS="$JVM_ARGS -XX:+UseG1GC"
 JVM_ARGS="$JVM_ARGS -XX:MaxGCPauseMillis=50"
 JVM_ARGS="$JVM_ARGS -XX:+UseStringDeduplication"
-
-# Container awareness
-JVM_ARGS="$JVM_ARGS -XX:+UseContainerSupport"
 
 # Build server arguments
 SERVER_ARGS="--bind 0.0.0.0:5520"
