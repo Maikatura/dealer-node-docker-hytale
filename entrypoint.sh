@@ -85,7 +85,7 @@ refresh_token_if_needed
 # The hytale-downloader stores credentials in .hytale-downloader-credentials.json
 # We inject the pre-obtained credentials via environment variable
 # Format based on actual hytale-downloader behavior
-cat > .hytale-downloader-credentials.json << EOF
+cat > /server/.hytale-downloader-credentials.json << EOF
 ${HYTALE_CREDENTIALS_JSON}
 EOF
 
