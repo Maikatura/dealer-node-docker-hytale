@@ -36,7 +36,7 @@ refresh_token_if_needed() {
     local buffer=300  # 5 minutes buffer
     
     if [ "$expires_at" -le "$((current_time + buffer))" ]; then
-        echo "[Dealer Node] Access token expired or expiring soon, refreshing..."
+        echo "[Loser Node] Access token expired or expiring soon, refreshing..."
         
         local refresh_token=$(echo "$HYTALE_CREDENTIALS_JSON" | jq -r '.refresh_token')
         
@@ -95,16 +95,33 @@ echo "[Loser Node] Credentials configured"
 # ------------------------------------------------------------------------------
 # Download/update server files
 # ------------------------------------------------------------------------------
+
+# Detect OS and set the correct hytale-downloader binary name
+if [ -f "./hytale-downloader.exe" ]; then
+    DOWNLOADER="./hytale-downloader.exe"
+elif [ -f "./hytale-downloader" ]; then
+    DOWNLOADER="./hytale-downloader"
+else
+    echo "[ERROR] hytale-downloader not found"
+    exit 1
+fi
 echo "[Loser Node] Using downloader: $DOWNLOADER"
 
-if [ ! -f "./Server/HytaleServer.jar" ]; then
+if [ ! -f "HytaleServer.jar" ]; then
     echo "[Loser Node] Downloading server files..."
     $DOWNLOADER -download-path server-files.zip
     
     if [ -f "server-files.zip" ]; then
-        echo "[Dealer Node] Unzipping server files..."
+        echo "[Loser Node] Unzipping server files..."
         unzip -q -o server-files.zip -d .
         rm server-files.zip
+        
+        # Check if files were extracted to a Server/ subdirectory (common in Hytale zips)
+        if [ -d "Server" ] && [ -f "Server/HytaleServer.jar" ]; then
+            echo "[Loser Node] Detected 'Server' subdirectory, moving files to root..."
+            mv Server/* .
+            rmdir Server
+        fi
         
         echo "[Loser Node] Server files downloaded and extracted successfully"
     else
@@ -121,11 +138,10 @@ else
     fi
 fi
 
-
 # ------------------------------------------------------------------------------
 # Verify required files exist
 # ------------------------------------------------------------------------------
-if [ ! -f "./Server/HytaleServer.jar" ]; then
+if [ ! -f "HytaleServer.jar" ]; then
     echo "[ERROR] HytaleServer.jar not found after download"
     exit 1
 fi
@@ -148,11 +164,9 @@ fi
 echo "[Loser Node] Starting Hytale Server..."
 echo "[Loser Node] Server Name: ${SERVER_NAME}"
 echo "[Loser Node] Max Players: ${MAX_PLAYERS}"
-echo "[Loser Node] Memory: ${MEMORY_MB}MB"
 echo "[Loser Node] Auth Mode: ${AUTH_MODE}"
 echo "[Loser Node] Bind: 0.0.0.0:5520"
 echo ""
-
 
 # Build JVM arguments - let JVM use maximum available memory
 # UseContainerSupport makes JVM aware of container memory limits
@@ -180,7 +194,6 @@ if [ $# -gt 0 ]; then
     SERVER_ARGS="$SERVER_ARGS $@"
 fi
 
-# Execute the server (exec replaces shell process)
+# Execute the server using JAR (cross-platform)
 echo "[Loser Node] Executing: java $JVM_ARGS -jar HytaleServer.jar $SERVER_ARGS"
-screen -DmS hytale java $JVM_ARGS -jar ./Server/HytaleServer.jar $SERVER_ARGS
-#exec java $JVM_ARGS -jar ./Server/HytaleServer.jar $SERVER_ARGS
+exec java $JVM_ARGS -jar HytaleServer.jar $SERVER_ARGS
